@@ -8,7 +8,7 @@ export default function SideNav() {
     <div className="px-3 md:px-2 py-4 h-full flex flex-col">
       <Link
         href="/login"
-        className="mb-2 p-4 h-20 md:h-40 flex flex-row items-end bg-blue-500 rounded-md"
+        className="mb-2 p-4 h-20 md:h-40 flex flex-row items-end bg-green-500 rounded-md"
       >
         <div className="w-32 md:w-40">
           <AcmeLogo />
