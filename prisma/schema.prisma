@@ -37,7 +37,7 @@ model Customer {
 
 model Invoice {
   id      String   @id @default(uuid())
-  amount  Int      
+  amount  Int?     
   owner   Customer @relation(fields: [ownerId], references: [id])
   ownerId String
   status  String?  @db.VarChar(255)
