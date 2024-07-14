@@ -28,7 +28,7 @@ export const formatDate = (dateStr: string, locale: string = "en-US") => {
   return formatter.format(date);
 };
 
-export function generatePaginaton(currentPage: number, totalPages: number) {
+export function generatePagination(currentPage: number, totalPages: number) {
   if (totalPages <= 7) {
     return Array.from({ length: totalPages }, (_, idx) => idx + 1);
   }
@@ -40,7 +40,7 @@ export function generatePaginaton(currentPage: number, totalPages: number) {
   }
   return [
     1,
-    "...",
+    '...',
     currentPage - 1,
     currentPage,
     currentPage + 1,
