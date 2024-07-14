@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams, usePathname } from "next/navigation";
-import { generatePaginaton } from "@/app/lib/utils";
+import { generatePagination } from "@/app/lib/utils";
 import Link from "next/link";
 import clsx from "clsx";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
@@ -9,8 +9,7 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const allPages = generatePaginaton(currentPage, totalPages);
-
+  const allPages = generatePagination(currentPage, totalPages);
 
   const createPageUrl = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams);
@@ -30,12 +29,15 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
         {allPages.map((page, idx) => {
           let position: "first" | "last" | "single" | "middle" | undefined;
           if (idx === 0) position = "first";
+
           if (idx === allPages.length - 1) position = "last";
+
           if (allPages.length === 1) position = "single";
           if (page === "...") position = "middle";
+
           return (
             <PaginationNumber
-              key={page}
+              key={idx}
               href={createPageUrl(page)}
               page={page}
               position={position}
@@ -65,22 +67,24 @@ function PaginationNumber({
   position?: string;
   isActive: boolean;
 }) {
-    let className = clsx(
-        'h-10 w-10 flex items-center justify-center text-sm border border-green-500',
-        {
-            'rounded-l-md': position === 'first' || position === 'single',
-            'rounded-r-md': position === 'last' || position === 'single',
-            'z-10 bg-green-500 border-green-500 text-white': isActive,
-            'hover:bg-green-100': !isActive && position !== 'middle',
-            'text-green-300': position === 'middle'
-        }
-    ) 
+  let className = clsx(
+    "h-10 w-10 flex items-center justify-center text-sm border border-green-500",
+    {
+      "rounded-l-md": position === "first" || position === 'single',
+      "rounded-r-md": position === "last" || position === "single",
+      "z-10 bg-green-500 border-green-500 text-white": isActive,
+      "hover:bg-green-100": !isActive && position !== "middle",
+      "text-blue-200 font-bold": position === "middle",
+    }
+  );
 
-  return isActive || position === 'middle' ? (
+  return isActive || position === "middle" ? (
     <div className={className}>{page}</div>
   ) : (
-    <Link href={href} className={className}>{page}</Link>
-  )
+    <Link href={href} className={className}>
+      {page}
+    </Link>
+  );
 }
 
 function PaginationArrow({
