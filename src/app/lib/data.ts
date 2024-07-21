@@ -1,8 +1,7 @@
-import { Revenue, LatestInvoice } from "./definitions";
+import { Revenue, LatestInvoice, CustomerField, InvoiceForm } from "./definitions";
 import { formatCurrency } from "./utils";
 import prisma from "../db";
-import { resolve } from "path";
-import { number } from "zod";
+
 
 export async function fetchRevenue() {
   try {
@@ -157,5 +156,87 @@ export async function fetchFilteredInvoices(
   } catch (error) {
     console.error("DataBase Error", error);
     throw new Error("Failed to fetch invoices");
+  }
+}
+
+export async function fetchInvoicesPage(query:string) {
+  try {
+    const count = await prisma.invoice.count({
+      where: {
+        OR: [
+          {
+            owner: {
+              name: {
+                startsWith: query,
+                mode: 'insensitive'
+              }
+            }
+          },
+          {
+            owner: {
+              email: {
+                equals: query
+              }
+            }
+          },
+          {
+            amount: +query
+          },
+          {
+            date: {
+              contains: query
+            }
+          },
+          {
+            status: {
+              startsWith: query
+            }
+          }
+        ]
+      }
+    })
+    const totalPages = Math.ceil(Number(count) / ITEMS_PER_PAGE) 
+    return totalPages
+  } catch (error) {
+    console.error('Database ERROR', error)
+    throw new Error('Failed to fetch total number of invoices.')
+  }
+}
+
+export async function fetchCustomers() {
+  try {
+    const customers:CustomerField[] = await prisma.customer.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        name: 'asc'
+      }
+    })
+    return customers
+  } catch (error) {
+    console.error(`DataBase error:`, error)
+    throw new Error(`Failed to fetch all Customers`)
+  }
+}
+
+export async function fetchInvoiceById(id:string) {
+  try {
+    const data:InvoiceForm = await prisma.invoice.findUnique({
+      where: {
+        id: `${id}`
+      },
+      select: {
+        id: true,
+        amount: true,
+        status: true,
+        ownerId: true
+      }
+    })
+    return data
+  } catch (error) {
+    console.error('DataBase error:', error)
+    throw new Error('Failed to fetch invoice')
   }
 }
