@@ -3,6 +3,7 @@ import { formatCurrency, formatDate } from "@/app/lib/utils";
 import { UpdateInvoice, DeleteInvoice } from "./buttons";
 import clsx from "clsx";
 import Image from "next/image";
+import InvoiceSatus from "./status";
 
 export default async function InvoicesTable({
   query,
@@ -16,9 +17,43 @@ export default async function InvoicesTable({
   return (
     <div className="mt-6 flow-root">
       <div className="inline-block min-w-full align-middle">
-        <div className="rounded-lg bg-green-100 p-2 md:pt-0">
-          <div className="md:hidden"></div>
-          <table className="hidden md:table min-w-full text-gray-900">
+        <div className="rounded-lg bg-green-100 p-2 lg:pt-0">
+          <div className="lg:hidden">
+            {invoices.map((invoice) => (
+              <div
+                key={invoice.id}
+                className="mb-2 p-4 w-full rounded-lg bg-white"
+              >
+                <div className="flex items-center justify-between border-b p-2">
+                  <div>
+                    <div className="flex flex-row items-center">
+                      <Image
+                        src={invoice.owner.image_url}
+                        width={28}
+                        height={28}
+                        className="mr-2 rounded-full object-cover"
+                        alt={`profile-imafe-${invoice.owner.name}`}
+                      />
+                      <p className="italic">{invoice.owner.name}</p>
+                    </div>
+                    <p className="text-sm text-gray-500">{invoice.owner.email}</p>
+                  </div>
+                  <InvoiceSatus status={invoice.status ?? ''} />
+                </div>
+                <div className="pt-2 flex flex-row items-center justify-between">
+                  <div>
+                    <p className="font-medium text-sm">{formatCurrency(invoice.amount ?? 0)}</p>
+                    <p className="font-medium text-sm">{formatDate(invoice.date)}</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <UpdateInvoice id={invoice.id} />
+                    <DeleteInvoice id={invoice.id} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <table className="hidden lg:table min-w-full text-gray-900">
             <thead className="text-left rounded-lg text-sm font-normal">
               <tr>
                 <th scope="col" className="px-3 py-5 font-medium sm:pl-6">
