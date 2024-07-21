@@ -70,7 +70,7 @@ function PaginationNumber({
   let className = clsx(
     "h-10 w-10 flex items-center justify-center text-sm border border-green-500",
     {
-      "rounded-l-md": position === "first" || position === 'single',
+      "rounded-l-md": position === "first" || position === "single",
       "rounded-r-md": position === "last" || position === "single",
       "z-10 bg-green-500 border-green-500 text-white": isActive,
       "hover:bg-green-100": !isActive && position !== "middle",
