@@ -26,19 +26,26 @@ async function seedCustomers() {
           name: cust.name,
           email: cust.email,
           image_url: cust.image_url,
-          invoices: {
-            create: invoices.map((inv) => {
-              return {
-                amount: inv.amount,
-                status: inv.status,
-              };
-            }),
-          },
         },
       });
     })
   );
   return insrtedCustomers;
+}
+
+async function seedInvoices() {
+  const insertedInvoices = await Promise.all(
+    invoices.map(async (invoice) => {
+      return await prisma.invoice.create({
+        data: {
+          amount: invoice.amount,
+          status: invoice.status,
+          date: invoice.date,
+        },
+      });
+    })
+  );
+  return insertedInvoices
 }
 
 async function seedRevenue() {
@@ -60,6 +67,7 @@ export async function GET() {
     //await seedUser()
     //await seedCustomers();
     //await seedRevenue()
+    await seedInvoices()
     return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
     return Response.json({ error }, { status: 500 });

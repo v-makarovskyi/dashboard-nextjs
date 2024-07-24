@@ -1,6 +1,8 @@
 import { Revenue, LatestInvoice, CustomerField, InvoiceForm } from "./definitions";
 import { formatCurrency } from "./utils";
 import prisma from "../db";
+import { signIn } from "../../../auth";
+import { AuthError } from "next-auth";
 
 
 export async function fetchRevenue() {
@@ -240,3 +242,5 @@ export async function fetchInvoiceById(id:string) {
     throw new Error('Failed to fetch invoice')
   }
 }
+
+
