@@ -4,6 +4,8 @@ import { z } from "zod";
 import prisma from "../db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { signIn } from "../../../auth";
+import { AuthError } from "next-auth";
 
 export type State = {
   message?: string | null;
@@ -20,7 +22,8 @@ const FormSchema = z.object({
     invalid_type_error: "Please select a customer",
   }),
   amount: z.coerce
-    .number().gt(0, { message: "Please enter an amount greater than $0." }),
+    .number()
+    .gt(0, { message: "Please enter an amount greater than $0." }),
   status: z.enum(["pending", "paid"], {
     invalid_type_error: "Please select an invoice status",
   }),
@@ -68,7 +71,11 @@ export const createInvoice = async (prevState: State, formData: FormData) => {
   redirect("/dashboard/invoices");
 };
 
-export const updateInvoice = async (id: string, prevState:State,  formData: FormData) => {
+export const updateInvoice = async (
+  id: string,
+  prevState: State,
+  formData: FormData
+) => {
   try {
     const validatedFields = UpdateInvoice.safeParse({
       customerId: formData.get("customerId"),
@@ -76,14 +83,14 @@ export const updateInvoice = async (id: string, prevState:State,  formData: Form
       status: formData.get("status"),
     });
 
-    if(!validatedFields.success) {
+    if (!validatedFields.success) {
       return {
         errors: validatedFields.error.flatten().fieldErrors,
-        message: 'Missing Fields. Failed to Create Invoice.'
-      }
+        message: "Missing Fields. Failed to Create Invoice.",
+      };
     }
 
-    const { customerId, amount, status } = validatedFields.data
+    const { customerId, amount, status } = validatedFields.data;
 
     const amountInCent = amount * 100;
     await prisma.invoice.update({
@@ -118,3 +125,19 @@ export const deleteInvoice = async (id: string) => {
     return { message: "Database Error: Failed to Delete Invoice" };
   }
 };
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    await signIn('credentials', formData, )
+  } catch (error) {
+    if(error instanceof AuthError) {
+      switch(error.type) {
+        case 'CredentialsSignin':
+          return 'invalid data'
+      }
+    }
+  }
+}
